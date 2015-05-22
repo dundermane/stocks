@@ -1,0 +1,2 @@
+00 6 * * 2-6 <command> #Collect EoD history on every stock at 6am Tues-Saturday
+30 9 * * 1-5 <command> #Run this command during market hours
