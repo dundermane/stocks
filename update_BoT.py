@@ -1,4 +1,5 @@
 from os.path import realpath, join, dirname, isfile
+import subprocess
 from subprocess import Popen, PIPE
 import sys, os
 import time
@@ -31,8 +32,7 @@ def get_all_exchange_symbols(exchange):
     p = Popen(["wget", excBaseURL, '-O', path], stderr=PIPE)
     output = p.communicate()[0]
 
-def get_all_symbol_history(exchange):
-
+def get_symbol_list(exchange):
     fileInput = open( join(dirname(realpath(__file__)), 'data', exchange + '.csv') , 'r')
     syms = list()
     for line in fileInput:
@@ -40,14 +40,29 @@ def get_all_symbol_history(exchange):
         sym = line.split(',')[0].strip('\"')
         syms.append(sym)
     fileInput.close()
+    return syms
+
+def get_all_symbol_history(exchange):
+
+    syms = get_symbol_list(exchange)
 
     for sym in syms:
         get_symbol_history(sym, exchange)
         time.sleep(10)
 
+
+def get_nofly_txt(exchange):
+
+    syms = get_symbol_list(exchange)
+    excDir = join(dirname(realpath(__file__)),'data',exchange)
+    for sym in syms:
+        p = Popen(["tail","-n","1",join(excDir,sym+".history")], stdout=PIPE)
+        print p.communicate()
+
 if __name__ == '__main__':
     
-    exchanges = ['amex']
+    exchanges = ['amex','nyse','nasdaq']
     
     for exchange in exchanges:
-        get_all_symbol_history(exchange)
+#        get_all_symbol_history(exchange)
+        get_nofly_txt(exchange)
